@@ -121,7 +121,7 @@ def add_blacklist(update, context):
 
 @user_admin
 @typing_action
-def unblacklist(update, context):
+def unbl(update, context):
     msg = update.effective_message
     chat = update.effective_chat
     user = update.effective_user
@@ -140,21 +140,21 @@ def unblacklist(update, context):
 
     if len(words) > 1:
         text = words[1]
-        to_unblacklist = list(
+        to_unbl = list(
             {trigger.strip() for trigger in text.split("\n") if trigger.strip()}
         )
         successful = 0
-        for trigger in to_unblacklist:
+        for trigger in to_unbl:
             success = sql.rm_from_blacklist(chat_id, trigger.lower())
             if success:
                 successful += 1
 
-        if len(to_unblacklist) == 1:
+        if len(to_unbl) == 1:
             if successful:
                 send_message(
                     update.effective_message,
                     "Removed <code>{}</code> from blacklist in <b>{}</b>!".format(
-                        html.escape(to_unblacklist[0]), html.escape(chat_name)
+                        html.escape(to_unbl[0]), html.escape(chat_name)
                     ),
                     parse_mode=ParseMode.HTML,
                 )
@@ -163,7 +163,7 @@ def unblacklist(update, context):
                     update.effective_message, "This is not a blacklist trigger!"
                 )
 
-        elif successful == len(to_unblacklist):
+        elif successful == len(to_unbl):
             send_message(
                 update.effective_message,
                 "Removed <code>{}</code> from blacklist in <b>{}</b>!".format(
@@ -184,7 +184,7 @@ def unblacklist(update, context):
                 update.effective_message,
                 "Removed <code>{}</code> from blacklist. {} did not exist, "
                 "so were not removed.".format(
-                    successful, len(to_unblacklist) - successful
+                    successful, len(to_unbl) - successful
                 ),
                 parse_mode=ParseMode.HTML,
             )
@@ -455,16 +455,16 @@ Blacklists are used to stop certain triggers from being said in a group. Any tim
  ❍ /blacklist*:* View the current blacklisted words.
 
 Admin only:
- ❍ /addblacklist <triggers>*:* Add a trigger to the blacklist. Each line is considered one trigger, so using different lines will allow you to add multiple triggers.
- ❍ /unblacklist <triggers>*:* Remove triggers from the blacklist. Same newline logic applies here, so you can remove multiple triggers at once.
+ ❍ /bl <triggers>*:* Add a trigger to the blacklist. Each line is considered one trigger, so using different lines will allow you to add multiple triggers.
+ ❍ /unbl <triggers>*:* Remove triggers from the blacklist. Same newline logic applies here, so you can remove multiple triggers at once.
  ❍ /blacklistmode <off/del/warn/ban/kick/mute/tban/tmute>*:* Action to perform when someone sends blacklisted words.
 """
 
 BLACKLIST_HANDLER = DisableAbleCommandHandler(
     "blacklist", blacklist, pass_args=True, admin_ok=True, run_async=True
 )
-ADD_BLACKLIST_HANDLER = CommandHandler("addblacklist", add_blacklist, run_async=True)
-UNBLACKLIST_HANDLER = CommandHandler("unblacklist", unblacklist, run_async=True)
+ADD_BLACKLIST_HANDLER = CommandHandler("bl", add_blacklist, run_async=True)
+unbl_HANDLER = CommandHandler("unbl", unbl, run_async=True)
 BLACKLISTMODE_HANDLER = CommandHandler(
     "blacklistmode", blacklist_mode, pass_args=True, run_async=True
 )
@@ -478,14 +478,14 @@ BLACKLIST_DEL_HANDLER = MessageHandler(
 
 dispatcher.add_handler(BLACKLIST_HANDLER)
 dispatcher.add_handler(ADD_BLACKLIST_HANDLER)
-dispatcher.add_handler(UNBLACKLIST_HANDLER)
+dispatcher.add_handler(unbl_HANDLER)
 dispatcher.add_handler(BLACKLISTMODE_HANDLER)
 dispatcher.add_handler(BLACKLIST_DEL_HANDLER, group=BLACKLIST_GROUP)
 
 __handlers__ = [
     BLACKLIST_HANDLER,
     ADD_BLACKLIST_HANDLER,
-    UNBLACKLIST_HANDLER,
+    unbl_HANDLER,
     BLACKLISTMODE_HANDLER,
     (BLACKLIST_DEL_HANDLER, BLACKLIST_GROUP),
 ]
