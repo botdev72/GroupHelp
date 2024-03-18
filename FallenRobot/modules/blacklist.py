@@ -241,7 +241,7 @@ def blacklist_mode(update, context):
             sql.set_blacklist_strength(chat_id, 5, "0")
         elif args[0].lower() == "tban":
             if len(args) == 1:
-                teks = """It looks like you tried to set time value for blacklist but you didn't specified time; Try, `/blacklistmode tban <timevalue>`.
+                teks = """It looks like you tried to set time value for blacklist but you didn't specified time; Try, `/blmode tban <timevalue>`.
 				
 Examples of time value: 4m = 4 minutes, 3h = 3 hours, 6d = 6 days, 5w = 5 weeks."""
                 send_message(update.effective_message, teks, parse_mode="markdown")
@@ -256,7 +256,7 @@ Example of time value: 4m = 4 minutes, 3h = 3 hours, 6d = 6 days, 5w = 5 weeks."
             sql.set_blacklist_strength(chat_id, 6, str(args[1]))
         elif args[0].lower() == "tmute":
             if len(args) == 1:
-                teks = """It looks like you tried to set time value for blacklist but you didn't specified  time; try, `/blacklistmode tmute <timevalue>`.
+                teks = """It looks like you tried to set time value for blacklist but you didn't specified  time; try, `/blmode tmute <timevalue>`.
 
 Examples of time value: 4m = 4 minutes, 3h = 3 hours, 6d = 6 days, 5w = 5 weeks."""
                 send_message(update.effective_message, teks, parse_mode="markdown")
@@ -310,11 +310,11 @@ Examples of time value: 4m = 4 minutes, 3h = 3 hours, 6d = 6 days, 5w = 5 weeks.
         elif getmode == 7:
             settypeblacklist = "temporarily mute for {}".format(getvalue)
         if conn:
-            text = "Current blacklistmode: *{}* in *{}*.".format(
+            text = "Current blmode: *{}* in *{}*.".format(
                 settypeblacklist, chat_name
             )
         else:
-            text = "Current blacklistmode: *{}*.".format(settypeblacklist)
+            text = "Current blmode: *{}*.".format(settypeblacklist)
         send_message(update.effective_message, text, parse_mode=ParseMode.MARKDOWN)
     return ""
 
@@ -457,7 +457,7 @@ Blacklists are used to stop certain triggers from being said in a group. Any tim
 Admin only:
  ❍ /bl <triggers>*:* Add a trigger to the blacklist. Each line is considered one trigger, so using different lines will allow you to add multiple triggers.
  ❍ /unbl <triggers>*:* Remove triggers from the blacklist. Same newline logic applies here, so you can remove multiple triggers at once.
- ❍ /blacklistmode <off/del/warn/ban/kick/mute/tban/tmute>*:* Action to perform when someone sends blacklisted words.
+ ❍ /blmode <off/del/warn/ban/kick/mute/tban/tmute>*:* Action to perform when someone sends blacklisted words.
 """
 
 BLACKLIST_HANDLER = DisableAbleCommandHandler(
@@ -465,8 +465,8 @@ BLACKLIST_HANDLER = DisableAbleCommandHandler(
 )
 ADD_BLACKLIST_HANDLER = CommandHandler("bl", add_blacklist, run_async=True)
 unbl_HANDLER = CommandHandler("unbl", unbl, run_async=True)
-BLACKLISTMODE_HANDLER = CommandHandler(
-    "blacklistmode", blacklist_mode, pass_args=True, run_async=True
+blmode_HANDLER = CommandHandler(
+    "blmode", blacklist_mode, pass_args=True, run_async=True
 )
 BLACKLIST_DEL_HANDLER = MessageHandler(
     (Filters.text | Filters.command | Filters.sticker | Filters.photo)
@@ -479,13 +479,13 @@ BLACKLIST_DEL_HANDLER = MessageHandler(
 dispatcher.add_handler(BLACKLIST_HANDLER)
 dispatcher.add_handler(ADD_BLACKLIST_HANDLER)
 dispatcher.add_handler(unbl_HANDLER)
-dispatcher.add_handler(BLACKLISTMODE_HANDLER)
+dispatcher.add_handler(blmode_HANDLER)
 dispatcher.add_handler(BLACKLIST_DEL_HANDLER, group=BLACKLIST_GROUP)
 
 __handlers__ = [
     BLACKLIST_HANDLER,
     ADD_BLACKLIST_HANDLER,
     unbl_HANDLER,
-    BLACKLISTMODE_HANDLER,
+    blmode_HANDLER,
     (BLACKLIST_DEL_HANDLER, BLACKLIST_GROUP),
 ]
